@@ -1,5 +1,7 @@
 # Advanced_MobileLab1
 고급모바일실험 프로젝트 - These days
+ChatGPT를 이용한 트렌드모음앱
+
 # Stack
 Frontend - ReactNative_Expo
 Backend - Nodejs
@@ -18,7 +20,7 @@ Thesedays
     -routes/: API 엔드포인트와 관련된 라우팅 로직 저장
 
     -models/: 데이터베이스 모델과 관련된 로직이 저장
-    
+
     -middlewares/: API 요청을 처리하는 데 사용되는 미들웨어 로직이 저장
 
 ### trouble shoooooting
