@@ -16,6 +16,9 @@ app.get('/', (req, res) => {
   res.send('Welcome to my API!');
 });
 
+app.use('/api', newsRoutes);
+
+
 routes(app);
 
 const port = config.port || 5000;

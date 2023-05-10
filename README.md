@@ -7,7 +7,7 @@ Frontend - ReactNative_Expo
 Backend - Nodejs
 DB - MongoDB
 
-## 디렉토리구조
+## 디렉토리구조 - 추가 예정
 Thesedays
 - node_modules: 개발에 사용되는 모듈
 - server : 서버
