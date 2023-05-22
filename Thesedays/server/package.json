@@ -9,8 +9,23 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.4.0",
+    "chatgpt": "^5.2.4",
+    "cheerio": "^1.0.0-rc.12",
+    "child-process": "^1.0.2",
+    "chrome": "^0.1.0",
+    "chromedriver": "^113.0.0",
     "cors": "^2.8.5",
-    "express": "^4.18.2"
+    "crawler": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "iconv-lite": "^0.6.3",
+    "openai": "^3.2.1",
+    "puppeteer": "^20.2.0",
+    "readline-sync": "^1.4.10",
+    "selenium-webdriver": "^4.9.2",
+    "zd-chatgpt": "^10.4.1"
   },
+  "keywords": [],
   "description": ""
 }

@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "@react-navigation/native": "^6.1.6"
+    "@react-navigation/native": "^6.1.6",
+    "request": "^2.88.2",
+    "selenium-webdriver": "^4.9.2"
   }
 }
