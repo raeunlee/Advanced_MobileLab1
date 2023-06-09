@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const { spawn } = require('child_process');
 const openai = require('openai');
-
 const app = express();
+
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -20,11 +20,11 @@ app.get('/crawl', (req, res) => {
   const crawlerProcess = spawn('python3', ['crawling.py']);
   console.log("크롤링 파이썬 실행됨")
   crawlerProcess.stdout.on('data', (data) => {
-    // 크롤링 결과를 콘솔 출력
+    // 크롤링 결과
     console.log(data.toString());
   });
   crawlerProcess.stderr.on('data', (data) => {
-    // 크롤링 중 발생한 오류를 콘솔 출력
+    // 크롤링 중 발생한 오류
     console.error(data.toString());
   });
   crawlerProcess.on('close', (code) => {
@@ -71,7 +71,7 @@ app.get('/crawl', (req, res) => {
   });
 });
 
-const port = 3000;
+const port = 12000;
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

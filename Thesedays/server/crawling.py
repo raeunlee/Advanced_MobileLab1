@@ -1,38 +1,12 @@
-# import requests
-# from bs4 import BeautifulSoup
-# import time
-
-# # 기사 내용을 저장할 전역 변수 - DB 자제
-# articles = []
-
-# def crawl_articles():
-#     url = "https://search.naver.com/search.naver?where=news&sm=tab_jum&query=%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90"
-#     response = requests.get(url)
-#     soup = BeautifulSoup(response.text, "html.parser")
-#     article_groups = soup.select("div.info_group")
-
-#     for article_group in article_groups:
-#         links = article_group.select("a.info")
-#         if len(links) >= 2:
-#             article_url = links[1].attrs["href"]
-#             content = scrape_article(article_url)
-#             articles.append(content)
-#             time.sleep(0.3)
-
-# def scrape_article(article_url):
-#     response = requests.get(article_url, headers={'User-agent': 'Mozilla/5.0'})
-#     soup = BeautifulSoup(response.text, "html.parser")
-#     content = soup.select_one("#dic_area").text
-#     return content
-
-# if __name__ == "__main__":
-#     crawl_articles()
-
-
 from bs4 import BeautifulSoup
 import requests
 import re
 from tqdm import tqdm
+import nltk
+from konlpy.tag import Mecab
+
+tokenizer = Mecab()  # Initialize the tokenizer (you can also use other classes in KoNLPy for tokenization)
+MAX_TOKEN_COUNT = 4096
 
 # 페이지 url 형식에 맞게 바꾸어 주는 함수 만들기
   #입력된 수를 1, 11, 21, 31 ...만들어 주는 함수
@@ -127,6 +101,7 @@ for i in tqdm(range(len(news_url_1))):
 
 # 뉴스 내용 크롤링
 for i in tqdm(final_urls):
+    
     #각 기사 html get하기
     news = requests.get(i,headers=headers)
     news_html = BeautifulSoup(news.text,"html.parser")
@@ -152,6 +127,17 @@ for i in tqdm(final_urls):
     pattern2 = """[\n\n\n\n\n// flash 오류를 우회하기 위한 함수 추가\nfunction _flash_removeCallback() {}"""
     content = content.replace(pattern2, '')
 
+   # Tokenize the content
+    tokens = tokenizer.morphs(content)
+
+    # Skip content if token count exceeds the limit
+    if len(tokens) > MAX_TOKEN_COUNT:
+        continue
+
+    # Convert tokens back to string
+    content = ' '.join(tokens)
+    
+    
     news_titles.append(title)
     news_contents.append(content)
 
