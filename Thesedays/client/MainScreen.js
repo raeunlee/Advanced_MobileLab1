@@ -3,13 +3,10 @@ import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-na
 import React, { useCallback, useState } from 'react';
 import { useFonts, PlayfairDisplay_500Medium_Italic } from '@expo-google-fonts/playfair-display';
 import { styles } from './styles';
-import ButtonNavigation from './ButtonNavigation';
 
 const MainScreen = () => {
   const data = Array.from({ length: 20 }, (_, index) => ({ id: index + 1, text: `Item ${index + 1}` }));
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedButton, setSelectedButton] = useState('button1');
-  const [isButton2Highlighted, setIsButton2Highlighted] = useState(false);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -22,14 +19,6 @@ const MainScreen = () => {
   let [fontsLoaded] = useFonts({
     PlayfairDisplay_500Medium_Italic,
   });
-
-  const renderHeader = () => {
-    return (
-      <View style={styles.header}>
-        <Text style={[styles.logoText, { fontFamily: 'PlayfairDisplay_500Medium_Italic' }]}>thesedays</Text>
-      </View>
-    );
-  };
 
   const renderItem = ({ item }) => {
     return (
@@ -50,11 +39,6 @@ const MainScreen = () => {
     }
   };
 
-  const handleButtonPress = (button) => {
-    // Handle button press here
-    console.log('Button pressed:', button);
-    setSelectedButton(button);
-  };
 
   if (!fontsLoaded) {
     return null;
@@ -64,14 +48,11 @@ const MainScreen = () => {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <StatusBar style="auto" />
-        {renderHeader()}
       </View>
       <FlatList
         data={data}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
-        ListHeaderComponent={renderHeader}
-        ListFooterComponent={<ButtonNavigation selectedButton={selectedButton} onButtonPress={handleButtonPress} />}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
     </View>
