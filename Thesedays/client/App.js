@@ -27,7 +27,7 @@ const App = () => {
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1 }}>
-        {renderScreen()}
+        <MainScreen /> {/* MainScreen으로 고정 */}
       </View>
       <View style={{ paddingBottom: 10 }}>
         <ButtonNavigation selectedButton={selectedButton} onButtonPress={handleButtonPress} />

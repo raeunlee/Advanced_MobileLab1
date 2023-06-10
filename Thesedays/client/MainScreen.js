@@ -1,6 +1,6 @@
 import { StatusBar, Linking } from 'expo-status-bar';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useFonts, PlayfairDisplay_500Medium_Italic } from '@expo-google-fonts/playfair-display';
 import { styles } from './styles';
 import ButtonNavigation from './ButtonNavigation';
@@ -10,18 +10,36 @@ const MainScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedButton, setSelectedButton] = useState('button1');
   const [isButton2Highlighted, setIsButton2Highlighted] = useState(false);
-
+  const [content, setContent] = useState([]);
+  
   const onRefresh = useCallback(() => {
     setRefreshing(true);
 
     setTimeout(() => {
       setRefreshing(false);
+      // Fetch data from localhost:3000/api
+      fetchData();
     }, 2000);
   }, []);
-
   let [fontsLoaded] = useFonts({
     PlayfairDisplay_500Medium_Italic,
   });
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+
+  const fetchData = () => {
+    fetch('http://localhost:3000/api')
+      .then(res => res.json())
+      .then(data => {
+        setContent([data]);
+        console.log(data); // 데이터 확인을 위한 콘솔 로그 출력
+      })
+      .catch(error => console.error(error));
+  };
+
 
   const renderHeader = () => {
     return (
