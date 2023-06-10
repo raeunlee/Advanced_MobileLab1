@@ -5,16 +5,20 @@ const { spawn } = require('child_process');
 const openai = require('openai');
 const app = express();
 
-
+// middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// routing check
 app.get('/', (req, res) => {
   res.send('Welcome to my API!');
 });
 
-//------------------------------------------------//
+app.get("/api", (req, res) => {
+  res.json({ title: "Hello" });
+});
+
 
 app.get('/crawl', (req, res) => {
   const crawlerProcess = spawn('python3', ['crawling.py']);
@@ -71,8 +75,11 @@ app.get('/crawl', (req, res) => {
   });
 });
 
-const port = 12000;
+// variable
+const port = 3000;
 
+
+// server start
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

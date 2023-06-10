@@ -1,34 +1,3 @@
-# import requests
-# from bs4 import BeautifulSoup
-# import time
-
-# # 기사 내용을 저장할 전역 변수 - DB 자제
-# articles = []
-
-# def crawl_articles():
-#     url = "https://search.naver.com/search.naver?where=news&sm=tab_jum&query=%EC%82%BC%EC%84%B1%EC%A0%84%EC%9E%90"
-#     response = requests.get(url)
-#     soup = BeautifulSoup(response.text, "html.parser")
-#     article_groups = soup.select("div.info_group")
-
-#     for article_group in article_groups:
-#         links = article_group.select("a.info")
-#         if len(links) >= 2:
-#             article_url = links[1].attrs["href"]
-#             content = scrape_article(article_url)
-#             articles.append(content)
-#             time.sleep(0.3)
-
-# def scrape_article(article_url):
-#     response = requests.get(article_url, headers={'User-agent': 'Mozilla/5.0'})
-#     soup = BeautifulSoup(response.text, "html.parser")
-#     content = soup.select_one("#dic_area").text
-#     return content
-
-# if __name__ == "__main__":
-#     crawl_articles()
-
-import array
 from bs4 import BeautifulSoup
 import requests
 import re
@@ -36,6 +5,7 @@ from tqdm import tqdm
 from konlpy.tag import Komoran
 import openai
 import configparser
+
 
 
 # 페이지 url 형식에 맞게 바꾸어 주는 함수 만들기
@@ -165,12 +135,12 @@ for i in tqdm(final_urls):
     MAX_TOKENS_COUNT = 4096
     tokens = tokenizer.morphs(copied_content)
 
-    if len(tokens) > MAX_TOKENS_COUNT or len(tokens) < 150:
-        print("\ntoken count: ", len(tokens)) 
-        print("skip this news\n")
+    if len(tokens) > 3800 or len(tokens) < 150:
+        #print("\ntoken count: ", len(tokens)) 
+        #print("skip this news\n")
         continue
 
-    print("\ntoken count: ", len(tokens),"\n") 
+    #print("\ntoken count: ", len(tokens),"\n") 
 
     news_titles.append(title)
     news_contents.append(content)
@@ -187,66 +157,40 @@ for i in tqdm(final_urls):
 print("\n검색된 기사 갯수: 총 ",(page2+1-page)*10,'개')
 print("\n[뉴스 제목]")
 print(len(news_titles))
-#print(news_titles)
-#print("\n[뉴스 링크]")
-#print(final_urls)
-#print("\n[뉴스 내용]")
-#print(news_contents)
-
-#print('news_title: ',len(news_titles))
-#print('news_url: ',len(final_urls))
-#print('news_contents: ',len(news_contents))
-#print('news_dates: ',len(news_dates))
-
 
 news_summmary = []
 
-# .config 파일에서 API 키를 읽어오는 함수
-def get_api_key():
-     config = configparser.ConfigParser()
-     config.read('.config')
-     return config['OPENAI']['API_KEY']
-
+# OpenAI API 키를 불러오는 함수
+#def get_api_key():
+#    config = configparser.ConfigParser()
+#    config.read('.config')
+#    return config['OPENAI']['API_KEY']
 
 # 기사 내용을 요약하는 함수
-def summarize_article(news_content):
-    # api_key = get_api_key()
-    # openai.api_key = api_key
-    openai.api_key = API_KEY
+def summarize_article(news_content, api_key):
+    openai.api_key = api_key  # OpenAI API 키를 입력하세요.
     
-    # ChatGPT API를 사용하여 요약 생성
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=news_content,
-        max_tokens=100,
-        n=1,
-        stop=None,
-        temperature=0.3,
-        #model=model_id
+    # Chat Completion API 요청
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "넌 뉴스를 요약해주는 인공지능이야. 내가 주는 뉴스를  한국어로 200token 이내로 요약해줘"},
+            {"role": "user", "content": news_content}
+        ],
     )
-
-    print(response)
-
-    summary = response.choices[0].text.strip()
-    print(summary)
+    
+    # 요약 결과 추출
+    summary = response['choices'][0]['message']['content']
     return summary
 
-# if __name__ == "__main__":
-#     # crawler.py에서 저장한 기사 내용을 읽어옴
-    
-#     # 각 기사 내용을 요약
-#     for news_content in news_contents:
-#         summary = summarize_article(news_content)
-#         news_summmary.append(summary)
-#         # 요약 결과 처리 로직 추가
+#api_key = get_api_key()
+
+
+
 for news_content in news_contents:
-    if news_content == None:
-        continue
-    summary = summarize_article(news_content)
+    summary = summarize_article(news_content, api_key)
+    print(news_contents.index(news_content))
     print(summary)
+    print("\n")
     news_summmary.append(summary)
         # 요약 결과 처리 로직 추가
-
-
-print("\n[뉴스 요약]\n")
-print(news_summmary)
