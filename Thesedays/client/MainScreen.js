@@ -3,9 +3,10 @@ import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-na
 import React, { useCallback, useState } from 'react';
 import { useFonts, PlayfairDisplay_500Medium_Italic } from '@expo-google-fonts/playfair-display';
 import { styles } from './styles';
+import ItemComponent from './item';
 
 const MainScreen = () => {
-  const data = Array.from({ length: 20 }, (_, index) => ({ id: index + 1, text: `Item ${index + 1}` }));
+  const data = Array.from({ length: 20 }, (_, index) => ({ id: index + 1, text: `Item ${index + 1}`,isScraped: false }));
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
@@ -20,23 +21,21 @@ const MainScreen = () => {
     PlayfairDisplay_500Medium_Italic,
   });
 
+  
+
   const renderItem = ({ item }) => {
-    return (
-      <TouchableOpacity style={styles.item} onPress={() => handleItemPress(item.id)}>
-        <Text style={styles.itemText}>{item.text}</Text>
-      </TouchableOpacity>
-    );
-  };
+    const handleItemPress = () => {
+      // Handle item press here
+      console.log('Item pressed:', item.id);
 
-  const handleItemPress = (itemId) => {
-    // Handle item press here
-    console.log('Item pressed:', itemId);
+      // Example: Open a link based on the item ID
+      const link = getItemLinkById(item.id); // Implement a function to get the corresponding link for the item ID
+      if (link) {
+        Linking.openURL(link);
+      }
+    };
 
-    // Example: Open a link based on the item ID
-    const link = getItemLinkById(itemId); // Implement a function to get the corresponding link for the item ID
-    if (link) {
-      Linking.openURL(link);
-    }
+    return <ItemComponent item={item} onPress={handleItemPress} />;
   };
 
 
