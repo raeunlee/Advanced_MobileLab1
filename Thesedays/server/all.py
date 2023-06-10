@@ -3,8 +3,8 @@ import requests
 import re
 from tqdm import tqdm
 from konlpy.tag import Komoran
+from config import OPENAI_API_KEY
 import openai
-import configparser
 
 
 
@@ -160,12 +160,6 @@ print(len(news_titles))
 
 news_summmary = []
 
-# OpenAI API 키를 불러오는 함수
-#def get_api_key():
-#    config = configparser.ConfigParser()
-#    config.read('.config')
-#    return config['OPENAI']['API_KEY']
-
 # 기사 내용을 요약하는 함수
 def summarize_article(news_content, api_key):
     openai.api_key = api_key  # OpenAI API 키를 입력하세요.
@@ -174,7 +168,7 @@ def summarize_article(news_content, api_key):
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "넌 뉴스를 요약해주는 인공지능이야. 내가 주는 뉴스를  한국어로 200token 이내로 요약해줘"},
+            {"role": "system", "content": "넌 뉴스를 요약해주는 인공지능이야. 내가 주는 뉴스를 한국어로 200token 이내로 요약해줘"},
             {"role": "user", "content": news_content}
         ],
     )
@@ -183,14 +177,10 @@ def summarize_article(news_content, api_key):
     summary = response['choices'][0]['message']['content']
     return summary
 
-#api_key = get_api_key()
-
-
 
 for news_content in news_contents:
-    summary = summarize_article(news_content, api_key)
+    summary = summarize_article(news_content, OPENAI_API_KEY)
     print(news_contents.index(news_content))
     print(summary)
     print("\n")
     news_summmary.append(summary)
-        # 요약 결과 처리 로직 추가
