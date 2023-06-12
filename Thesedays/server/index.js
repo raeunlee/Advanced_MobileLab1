@@ -19,7 +19,7 @@ app.get("/api", (req, res) => {
   res.json({ title: "Hello" });
 });
 
-
+/*
 app.get('/crawl', (req, res) => {
   const crawlerProcess = spawn('python3', ['crawling.py']);
   console.log("크롤링 파이썬 실행됨")
@@ -72,6 +72,40 @@ app.get('/crawl', (req, res) => {
       console.error('crawler.py 실행 중 오류가 발생했습니다.');
       res.status(500).send('An error occurred during crawling.');
     }
+  });
+});
+*/
+
+app.get('/crawl', (req, res) => {
+  const process = spawn('python3', ['all.py']);
+  console.log("파이썬 스크립트 실행됨");
+
+  let articles = []; // 기사 내용을 저장할 배열
+
+  process.stdout.on('data', (data) => {
+    const result = data.toString().trim(); // 스크립트 실행 결과
+    console.log(result);
+    articles.push(result);
+  });
+
+  process.stderr.on('data', (data) => {
+    console.error(data.toString()); // 스크립트 실행 중 발생한 오류
+  });
+
+  process.on('close', (code) => {
+    if (code === 0) {
+      console.log('스크립트 실행이 완료되었습니다.');
+      console.log('articles:', articles); // 기사 내용 확인
+      res.send('작업이 성공적으로 완료되었습니다.');
+    } else {
+      console.error('스크립트 실행 중 오류가 발생했습니다.');
+      res.status(500).send('작업 수행 중 오류가 발생했습니다.');
+    }
+
+    // articles 변수 초기화
+    articles = [];
+
+    // 추가 작업을 수행할 수도 있습니다.
   });
 });
 
