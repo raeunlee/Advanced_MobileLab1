@@ -8,12 +8,12 @@
     "ios": "expo start --ios",
     "web": "expo start --web"
   },
-  
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo-google-fonts/playfair-display": "^0.2.3",
     "@expo/webpack-config": "^18.0.1",
     "@react-native-community/masked-view": "^0.1.11",
+    "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "axios": "^1.4.0",
     "concurrently": "^8.2.0",
