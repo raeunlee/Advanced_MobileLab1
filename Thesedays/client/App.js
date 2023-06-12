@@ -1,38 +1,49 @@
-// import Axios from "axios";
-import React, {useState} from "react";
+import React from 'react';
 import { View } from 'react-native';
-import ButtonNavigation from './ButtonNavigation';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { MaterialIcons } from '@expo/vector-icons';
 import MainScreen from './MainScreen';
 import HotSns from './HotSns';
 import Scrap from './Scrap';
+import { styles } from './styles';
+import HeaderNavigation from './HeaderNavigation';
+
+
+const Tab = createBottomTabNavigator();
 
 const App = () => {
-
-  const [selectedButton, setSelectedButton] = useState('button1');
-
-  const handleButtonPress = (button) => {
-    setSelectedButton(button);
-  };
-
-  const renderScreen = () => {
-    if (selectedButton === 'button1') {
-      return <HotSns />;
-    } else if (selectedButton === 'button2') {
-      return <MainScreen />;
-    } else if (selectedButton === 'button3') {
-      return <Scrap />;
-    }
-  };
-
   return (
-    <View style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
-        <MainScreen /> {/* MainScreen으로 고정 */}
       </View>
-      <View style={{ paddingBottom: 10 }}>
-        <ButtonNavigation selectedButton={selectedButton} onButtonPress={handleButtonPress} />
-      </View>
-    </View>
+      <Tab.Navigator
+        screenOptions={
+          ({ route }) => ({
+          tabBarIcon: ({ color, size }) => {
+            let iconName;
+
+            if (route.name === 'Main') {
+              iconName = 'home';
+            } else if (route.name === 'HotSns') {
+              iconName = 'whatshot';
+            } else if (route.name === 'Scrap') {
+              iconName = 'bookmark';
+            }
+
+            return <MaterialIcons name={iconName} size={size} color={color} />;
+          },
+          tabBarLabel: () => null,
+          headerShown: false,
+        })}
+        tabBarOptions={{
+          activeTintColor: 'gold',
+          inactiveTintColor: 'gray',
+        }}
+      >
+        <Tab.Screen name="HotSns" component={HotSns} />
+        <Tab.Screen name="Main" component={MainScreen} />
+        <Tab.Screen name="Scrap" component={Scrap} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 };
 
