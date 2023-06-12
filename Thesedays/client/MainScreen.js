@@ -1,6 +1,6 @@
 import { StatusBar, Linking } from 'expo-status-bar';
 import { FlatList, RefreshControl, Text, TouchableOpacity, View } from 'react-native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useFonts, PlayfairDisplay_500Medium_Italic } from '@expo-google-fonts/playfair-display';
 import { styles } from './styles';
 import ItemComponent from './item';
@@ -8,20 +8,18 @@ import ItemComponent from './item';
 const MainScreen = () => {
   const data = Array.from({ length: 20 }, (_, index) => ({ id: index + 1, text: `Item ${index + 1}`,isScraped: false }));
   const [refreshing, setRefreshing] = useState(false);
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
 
     setTimeout(() => {
       setRefreshing(false);
+      // Fetch data from localhost:3000/api
+      fetchData();
     }, 2000);
   }, []);
-
   let [fontsLoaded] = useFonts({
     PlayfairDisplay_500Medium_Italic,
   });
-
-  
 
   const renderItem = ({ item }) => {
     const handleItemPress = () => {
