@@ -2,9 +2,12 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from tqdm import tqdm
-from konlpy.tag import Komoran
 from config import OPENAI_API_KEY
+from openai.error import InvalidRequestError
 import openai
+
+import tiktoken
+enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
 
 
@@ -131,17 +134,14 @@ for i in tqdm(final_urls):
 
     #tokenize the content
     #token is smaller than 150 it was photo news
-    tokenizer = Komoran()
-    MAX_TOKENS_COUNT = 4096
-    tokens = tokenizer.morphs(copied_content)
 
-    if len(tokens) > 3800 or len(tokens) < 150:
-        #print("\ntoken count: ", len(tokens)) 
-        #print("skip this news\n")
+    tokens = len(enc.encode(copied_content))
+
+    if tokens > 3800 or tokens < 300:
         continue
 
-    #print("\ntoken count: ", len(tokens),"\n") 
-
+    print("tokens: ", tokens)
+ 
     news_titles.append(title)
     news_contents.append(content)
 
@@ -164,18 +164,24 @@ news_summmary = []
 def summarize_article(news_content, api_key):
     openai.api_key = api_key  # OpenAI API 키를 입력하세요.
     
-    # Chat Completion API 요청
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "넌 뉴스를 요약해주는 인공지능이야. 내가 주는 뉴스를 한국어로 200token 이내로 요약해줘"},
-            {"role": "user", "content": news_content}
-        ],
-    )
-    
-    # 요약 결과 추출
-    summary = response['choices'][0]['message']['content']
-    return summary
+    try:
+        # Chat Completion API 요청
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "넌 뉴스를 요약해주는 인공지능이야. 내가 주는 뉴스를 한국어로 이내로 요약해줘"},
+                {"role": "user", "content": news_content}
+            ],
+            max_tokens=180,
+        )
+        
+        
+        # 요약 결과 추출
+        summary = response['choices'][0]['message']['content']
+        return summary
+    except InvalidRequestError as e:
+        print(e)
+        return None
 
 
 for news_content in news_contents:
@@ -183,4 +189,5 @@ for news_content in news_contents:
     print(news_contents.index(news_content))
     print(summary)
     print("\n")
-    news_summmary.append(summary)
+    if summary is not None:
+        news_summmary.append(summary)
