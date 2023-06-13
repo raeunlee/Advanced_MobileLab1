@@ -18,6 +18,7 @@ const ItemComponent = ({ item, onPress }) => {
     
     return linkData[itemId] || null; // Return the link or null if not found
   };
+
   
   return (
     <TouchableOpacity style={styles.item} onPress={onPress}>

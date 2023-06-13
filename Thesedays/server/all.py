@@ -2,9 +2,16 @@ from bs4 import BeautifulSoup
 import requests
 import re
 from tqdm import tqdm
-from konlpy.tag import Komoran
 from config import OPENAI_API_KEY
+from openai.error import InvalidRequestError
 import openai
+import json
+import requests
+
+
+
+import tiktoken
+enc = tiktoken.encoding_for_model("gpt-3.5-turbo")
 
 
 
@@ -97,6 +104,10 @@ for i in tqdm(range(len(news_url_1))):
         final_urls.append(news_url_1[i])
     else:
         pass
+    
+# Create a list to store news summaries and URLs
+news_summaries = []
+news_urls = []
 
 
 # 뉴스 내용 크롤링
@@ -118,7 +129,10 @@ for i in tqdm(final_urls):
     # 기사 텍스트만 가져오기
     # list합치기
     content = ''.join(str(content))
-
+    
+    # 기사 URL 가져오기
+    news_url = i
+    
     # html태그제거 및 텍스트 다듬기
     pattern1 = '<[^>]*>'
     title = re.sub(pattern=pattern1, repl='', string=str(title))
@@ -126,22 +140,19 @@ for i in tqdm(final_urls):
     pattern2 = """[\n\n\n\n\n// flash 오류를 우회하기 위한 함수 추가\nfunction _flash_removeCallback() {}"""
     content = content.replace(pattern2, '')
 
-     #copied news
+    #copied news
     copied_content = content
 
     #tokenize the content
     #token is smaller than 150 it was photo news
-    tokenizer = Komoran()
-    MAX_TOKENS_COUNT = 4096
-    tokens = tokenizer.morphs(copied_content)
 
-    if len(tokens) > 2800 or len(tokens) < 150:
-        #print("\ntoken count: ", len(tokens)) 
-        #print("skip this news\n")
+    tokens = len(enc.encode(copied_content))
+
+    if tokens > 3800 or tokens < 300:
         continue
 
-    #print("\ntoken count: ", len(tokens),"\n") 
-
+    print("tokens: ", tokens)
+ 
     news_titles.append(title)
     news_contents.append(content)
 
@@ -158,29 +169,55 @@ print("\n검색된 기사 갯수: 총 ",(page2+1-page)*10,'개')
 print("\n[뉴스 제목]")
 print(len(news_titles))
 
-news_summmary = []
+news_summary = []
 
 # 기사 내용을 요약하는 함수
 def summarize_article(news_content, api_key):
     openai.api_key = api_key  # OpenAI API 키를 입력하세요.
     
-    # Chat Completion API 요청
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "넌 뉴스를 요약해주는 인공지능이야. 내가 주는 뉴스를 한국어로 200token 이내로 요약해줘"},
-            {"role": "user", "content": news_content}
-        ],
-    )
+    try:
+        # Chat Completion API 요청
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "넌 뉴스를 요약해주는 인공지능이야. 내가 주는 뉴스를 한국어로 120token 이내로 요약해줘. 그리고 문장을 마무리 할때는 꼭 동사로 -이다로 끝내줘."},
+                {"role": "user", "content": news_content}
+            ],
+        )
+        
+        
+        # 요약 결과 추출
+        summary = response['choices'][0]['message']['content']
+        return summary
+    except InvalidRequestError as e:
+        print(e)
+        return None
+
+
+for news_content in news_contents: #
+    if news_contents.index(news_content) > 3: #
+        break #
     
-    # 요약 결과 추출
-    summary = response['choices'][0]['message']['content']
-    return summary
-
-
-for news_content in news_contents:
     summary = summarize_article(news_content, OPENAI_API_KEY)
     print(news_contents.index(news_content))
+    
     print(summary)
     print("\n")
-    news_summmary.append(summary)
+    if summary is not None:
+        news_summary.append(summary)
+        news_urls.append(news_url)
+        
+# Create a dictionary to store the summaries and URLs
+news_data = {
+    "summaries": news_summary,
+    "urls": news_urls
+}
+
+# Convert the dictionary to JSON format
+news_data_json = json.dumps(news_data, ensure_ascii=False)
+
+# Print the JSON string
+print(news_data_json)
+        
+        
+        

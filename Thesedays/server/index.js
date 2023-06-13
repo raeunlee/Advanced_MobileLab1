@@ -4,6 +4,7 @@ const cors = require('cors');
 const { spawn } = require('child_process');
 const openai = require('openai');
 const app = express();
+const path = require('path');
 
 // middleware
 app.use(cors());
