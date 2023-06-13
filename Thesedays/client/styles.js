@@ -63,4 +63,23 @@ export const styles = StyleSheet.create({
   selectedButton: {
     backgroundColor: '#333',
   },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  itemTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    flexShrink: 1,
+    flexWrap: 'wrap',
+  },
+  itemLink: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
 });

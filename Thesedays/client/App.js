@@ -14,6 +14,9 @@ const Tab = createBottomTabNavigator();
 
 const App = () => {
   return (
+    <NavigationContainer>
+      <View style={styles.header}>
+        <HeaderNavigation />
       </View>
       <Tab.Navigator
         screenOptions={

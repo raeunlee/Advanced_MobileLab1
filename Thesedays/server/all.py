@@ -135,7 +135,7 @@ for i in tqdm(final_urls):
     MAX_TOKENS_COUNT = 4096
     tokens = tokenizer.morphs(copied_content)
 
-    if len(tokens) > 3800 or len(tokens) < 150:
+    if len(tokens) > 2800 or len(tokens) < 150:
         #print("\ntoken count: ", len(tokens)) 
         #print("skip this news\n")
         continue
